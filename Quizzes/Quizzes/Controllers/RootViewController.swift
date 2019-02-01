@@ -12,7 +12,7 @@ class RootViewController: UITabBarController {
   private var searchVC: SearchViewController!
   private var createVC: CreateViewController!
   private var profileVC: ProfileViewController!
-  private var quizVC: QuizViewController!
+  private var quizVC: QuizzesViewController!
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -25,30 +25,30 @@ class RootViewController: UITabBarController {
   searchVC = SearchViewController()
   createVC = CreateViewController()
   profileVC = ProfileViewController()
-  quizVC = QuizViewController()
+  quizVC = QuizzesViewController()
   }
   
   private func configureTabs() {
-    let vcs = [searchVC, createVC, profileVC, quizVC]
+  let vcs = [quizVC, searchVC, createVC, profileVC]
     vcs.forEach { (vc) in
       switch vc {
       case vc as SearchViewController:
         vc?.tabBarItem.title = "Search"
-//        vc?.tabBarItem.image = #imageLiteral(resourceName: "placeholder-image.png")
+        vc?.tabBarItem.image = UIImage(named: "Search")
       case vc as CreateViewController:
         vc?.tabBarItem.title = "Create"
-//        vc?.tabBarItem.image = #imageLiteral(resourceName: "placeholder-image.png")
+        vc?.tabBarItem.image = UIImage(named: "AddQuiz")
       case vc as ProfileViewController:
         vc?.tabBarItem.title = "Profile"
         vc?.tabBarItem.image = #imageLiteral(resourceName: "profile-unfilled.png")
-      case vc as QuizViewController:
+      case vc as QuizzesViewController:
         vc?.tabBarItem.title = "Quizzes"
-//        vc?.tabBarItem.image = #imageLiteral(resourceName: "quiz-icon.png")
+        vc?.tabBarItem.image = UIImage(named: "Quiz")
       default:
         return
       }
     }
-    self.setViewControllers(vcs.compactMap {$0}, animated: true)
+    self.setViewControllers(vcs.compactMap {UINavigationController(rootViewController: $0!)}, animated: true)
   }
 
 

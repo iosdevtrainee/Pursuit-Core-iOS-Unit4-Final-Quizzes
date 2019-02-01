@@ -1,5 +1,5 @@
 //
-//  CreateViewController.swift
+//  QuizzesViewController.swift
 //  Quizzes
 //
 //  Created by J on 2/1/19.
@@ -8,10 +8,12 @@
 
 import UIKit
 
-class CreateViewController: UIViewController {
+class QuizzesViewController: UIViewController {
+  
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Create Quiz"
+        navigationItem.title = "My Quizzes"
     }
+  
 
 }
