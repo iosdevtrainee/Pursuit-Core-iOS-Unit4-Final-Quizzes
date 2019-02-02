@@ -7,14 +7,26 @@
 //
 
 import Foundation
-struct Quiz: Codable {
-  public let name: String
+
+protocol QuizProtocol {
+  var quizTitle: String { get set }
+  var facts: [String] { get set }
+}
+
+struct Quiz: Codable, QuizProtocol {
+  var quizTitle: String
+  public let id: UUID
   public var createdAt: String {
     let dateFormmater = DateFormatter()
     dateFormmater.dateFormat = "MM/DD/YY"
     return dateFormmater.string(from: creationDate)
   }
   public let creationDate: Date
-  public let descriptionOne: String
-  public let descriptionTwo: String
+  public var facts: [String]
+}
+
+struct SearchQuiz: Codable, QuizProtocol {
+  public let id: String
+  public var quizTitle: String
+  public var facts: [String]
 }

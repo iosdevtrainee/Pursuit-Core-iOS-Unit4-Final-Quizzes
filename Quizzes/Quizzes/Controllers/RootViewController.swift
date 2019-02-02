@@ -22,10 +22,12 @@ class RootViewController: UITabBarController {
   }
   
   private func setupVCs(){
-  searchVC = SearchViewController()
-  createVC = CreateViewController()
-  profileVC = ProfileViewController()
-  quizVC = QuizzesViewController()
+  let sessionmManager = SessionManager()
+  let quizManager = QuizManager(filename:"quiz.plist")
+  createVC = CreateViewController(sessionManager: sessionmManager, quizManager: quizManager)
+  searchVC = SearchViewController(sessionManager: sessionmManager, quizManager: quizManager)
+  profileVC = ProfileViewController(sessionManager: sessionmManager)
+  quizVC = QuizzesViewController(sessionManager: sessionmManager, quizManager: quizManager)
   }
   
   private func configureTabs() {
@@ -38,6 +40,7 @@ class RootViewController: UITabBarController {
       case vc as CreateViewController:
         vc?.tabBarItem.title = "Create"
         vc?.tabBarItem.image = UIImage(named: "AddQuiz")
+        vc?.modalTransitionStyle = .coverVertical
       case vc as ProfileViewController:
         vc?.tabBarItem.title = "Profile"
         vc?.tabBarItem.image = #imageLiteral(resourceName: "profile-unfilled.png")
