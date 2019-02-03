@@ -51,7 +51,7 @@ class RootViewController: UITabBarController {
         return
       }
     }
-    self.setViewControllers(vcs.compactMap {UINavigationController(rootViewController: $0!)}, animated: true)
+    setViewControllers(vcs.compactMap {UINavigationController(rootViewController: $0!)}, animated: true)
   }
 
 

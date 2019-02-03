@@ -12,14 +12,11 @@ class QuizzesViewController: UIViewController {
   private var sessionManager: SessionManager!
   private var quizManager: QuizManager!
   private lazy var quizView = QuizzesView()
-  private var quizzes = [SearchQuiz]()
-  private var quizAPIClient = QuizAPIClient()
-    override func viewDidLoad() {
-      super.viewDidLoad()
-      setupDelegates()
-      setupUI()
-//      quizAPIClient.fetchQuizzes()
+  private var quizzes = [Quiz]() {
+    didSet {
+      quizView.quizCollection.reloadData()
     }
+  }
   
   convenience init(sessionManager:SessionManager, quizManager:QuizManager){
     self.init()
@@ -27,10 +24,20 @@ class QuizzesViewController: UIViewController {
     self.sessionManager = sessionManager
   }
   
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    setupDelegates()
+    fetchQuizzes(quizManager: quizManager)
+    setupUI()
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    fetchQuizzes(quizManager: quizManager)
+  }
+  
   private func setupDelegates(){
     quizView.quizCollection.dataSource = self
     quizView.quizCollection.delegate = self
-    quizAPIClient.delegate = self
   }
   
   private func setupUI(){
@@ -43,14 +50,44 @@ class QuizzesViewController: UIViewController {
     }
     navigationItem.title = "My Quizzes"
   }
+  
+  
+  private func fetchQuizzes(quizManager:QuizManager){
+    if let savedQuizzes = try? quizManager.getQuizzes(){
+      quizzes = savedQuizzes
+    }
+  }
+  private func createDeleteAction(quiz:Quiz, indexToDelete:Int) -> UIAlertAction {
+    return UIAlertAction(title: "Delete", style: .destructive) { (alertAction) in
+      do {
+        try self.quizManager.deleteQuiz(quiz: quiz)
+      } catch {
+        let appError = error as! AppError
+        self.showAlert(title: "Deletion Error", message: appError.errorMessage(), actionMsg: "Cancel")
+      }
+      
+      self.quizzes.remove(at: indexToDelete)
+    }
+  }
 
+  @objc private func showOptions(_ sender:UIButton){
+    let indexToDelete = sender.tag
+    let quiz = quizzes[indexToDelete]
+    let quizOptionsController = UIAlertController()
+    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+    let deleteAction = createDeleteAction(quiz: quiz, indexToDelete: indexToDelete)
+    [deleteAction, cancelAction].forEach { quizOptionsController.addAction($0)}
+    present(quizOptionsController, animated: true, completion: nil)
+  }
+  
 }
 
 extension QuizzesViewController: UICollectionViewDataSource{
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     guard let cell = quizView.quizCollection.dequeueReusableCell(withReuseIdentifier: "SearchQuizCell", for: indexPath) as? SearchQuizCell else { fatalError("") }
     let quiz = quizzes[indexPath.row]
-    cell.configureCell(quiz:quiz, imageName: "more-filled")
+    cell.tag = indexPath.row
+    cell.configureCell(quiz:quiz, imageName: "more-filled", selector: #selector(showOptions(_:)), sender: self)
     return cell
   }
   
@@ -62,19 +99,6 @@ extension QuizzesViewController: UICollectionViewDelegateFlowLayout{
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height
       / 3)
-  }
-}
-
-extension QuizzesViewController: QuizAPIClientDelegate {
-  func quizAPIClient(_ quizAPIClient: QuizAPIClient, didReceiveData quizzes: [SearchQuiz]) {
-    self.quizzes = quizzes
-    DispatchQueue.main.async {
-      self.quizView.quizCollection.reloadData()
-    }
-  }
-  
-  func quizAPIClient(_ quizAPIClient: QuizAPIClient, didReceiveError error: AppError) {
-    
   }
 }
 

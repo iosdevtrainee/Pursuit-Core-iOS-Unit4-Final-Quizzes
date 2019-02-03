@@ -9,26 +9,33 @@
 import Foundation
 struct QuizManager {
   public let filename: String
-  public func saveQuiz(quiz:Quiz) -> Bool {
-    var quizzes = getQuizzes()
-    let url = DataPersistenceManager.filepathToDocumentsDiretory(filename: filename)
+  @discardableResult
+  public func saveQuiz(quiz:Quiz) throws -> Bool {
+    guard var quizzes = try? getQuizzes() else { return false }
+    guard !quizzes.contains (where: { $0.quizTitle.lowercased() == quiz.quizTitle.lowercased()
+      && $0.facts.map { $0.lowercased() } == quiz.facts.map { $0.lowercased() } }) else {
+        throw AppError.badStatusCode("Duplicate Quiz")
+    }
     quizzes.append(quiz)
+    return try saveQuizzes(quizzes: quizzes)
+  }
+  
+  private func saveQuizzes(quizzes:[Quiz]) throws -> Bool{
+    let url = DataPersistenceManager.filepathToDocumentsDiretory(filename: filename)
     do {
       let data = try PropertyListEncoder().encode(quizzes)
       do {
         try data.write(to: url, options:.atomic)
       } catch {
-        print(error)
-        return false
+        throw error
       }
     } catch {
-      print(error)
-      return false
+      throw error
     }
     return true
   }
   
-  public func getQuizzes() -> [Quiz] {
+  public func getQuizzes() throws -> [Quiz] {
     var quizzes = [Quiz]()
     let path = DataPersistenceManager.filepathToDocumentsDiretory(filename: filename).path
     if FileManager.default.fileExists(atPath: path){
@@ -36,10 +43,18 @@ struct QuizManager {
         do {
           quizzes = try PropertyListDecoder().decode([Quiz].self, from: data)
         } catch {
-          print(error)
+          throw AppError.propertyListEncodingError(error)
         }
       }
     }
     return quizzes
+  }
+  
+  @discardableResult
+  public func deleteQuiz(quiz:Quiz) throws -> Bool{
+    guard var quizzes = try? getQuizzes() else { return false }
+    guard let index = (quizzes.firstIndex { quiz.id == $0.id }) else { return false }
+    quizzes.remove(at: index)
+    return try saveQuizzes(quizzes: quizzes)
   }
 }

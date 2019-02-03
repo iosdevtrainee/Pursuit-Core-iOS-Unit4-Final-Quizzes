@@ -30,13 +30,25 @@ class SearchViewController: UIViewController {
     view = searchView
   }
   
-  
+  @objc private func addQuiz(_ sender:UIButton) {
+    let searchQuiz = quizzes[sender.tag]
+    let date = Date()
+    let id = UUID()
+    let quiz = Quiz.init(quizTitle: searchQuiz.quizTitle, id: id, creationDate: date, facts: searchQuiz.facts)
+    do {
+      try quizManager.saveQuiz(quiz: quiz)
+    } catch {
+      let appError = error as! AppError
+      showAlert(title: "Save Error", message: appError.errorMessage(), actionMsg: "Cancel")
+    }
+    showAlert(title: "Sucess", message: "Quiz added to your quizzes", actionMsg: "Done")
+  }
   
 }
 
 extension SearchViewController: QuizAPIClientDelegate {
   func quizAPIClient(_ quizAPIClient: QuizAPIClient, didReceiveData quizzes: [SearchQuiz]) {
-    self.quizzes = quizzes
+    self.quizzes = quizzes.sorted { $0.quizTitle.lowercased() < $1.quizTitle.lowercased() }
     DispatchQueue.main.async {
         self.searchView.quizCollection.reloadData()
     }
@@ -51,7 +63,8 @@ extension SearchViewController: UICollectionViewDataSource{
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     guard let cell = searchView.quizCollection.dequeueReusableCell(withReuseIdentifier: "SearchQuizCell", for: indexPath) as? SearchQuizCell else { fatalError("") }
     let quiz = quizzes[indexPath.row]
-    cell.configureCell(quiz:quiz, imageName: "add-icon")
+    cell.quizButton.tag = indexPath.row
+    cell.configureCell(quiz:quiz, imageName: "add-icon", selector: #selector(addQuiz(_:)), sender: self)
     return cell
   }
   
@@ -70,7 +83,6 @@ extension SearchViewController: UISearchBarDelegate {
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     guard let searchText = searchBar.text else { return }
     if searchText.isEmpty { quizAPIClient.fetchQuizzes(); return }
-    quizzes = quizzes.filter { $0.quizTitle.contains(searchText)}
-    searchView.quizCollection.reloadData()
+    quizAPIClient.searchQuizzes(searchTerm: searchText)
   }
 }

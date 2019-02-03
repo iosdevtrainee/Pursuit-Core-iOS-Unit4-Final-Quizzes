@@ -13,6 +13,7 @@ class ProfileView: UIView {
     let imageView = UIImageView()
     imageView.image = UIImage(named: "baby")
     imageView.isUserInteractionEnabled = true
+    imageView.clipsToBounds = true
     return imageView
   }()
   
@@ -27,7 +28,6 @@ class ProfileView: UIView {
   private lazy var profileView: UIView = {
     let view = UIView()
     view.backgroundColor = UIColor.gray.withAlphaComponent(0.4)
-//    view.alpha = CGFloat(0.5)
     return view
   }()
   
@@ -42,8 +42,7 @@ class ProfileView: UIView {
   override func layoutSubviews() {
     super.layoutSubviews()
     setupViews()
-    profileImage.layer.cornerRadius = profileImage.bounds.height / 2
-    profileView.layer.cornerRadius = profileView.bounds.width / 2
+//    profileView.layer.cornerRadius = profileView.bounds.width / 2
   }
   
   private func setupViews(){
@@ -76,5 +75,6 @@ class ProfileView: UIView {
     NSLayoutConstraint(item: profileImage, attribute: .centerX, relatedBy: .equal, toItem: profileView, attribute: .centerX, multiplier: 1.0, constant: 0).isActive = true
     profileImage.heightAnchor.constraint(equalToConstant: 60).isActive = true
     profileImage.widthAnchor.constraint(equalToConstant: 60).isActive = true
+    
   }
 }

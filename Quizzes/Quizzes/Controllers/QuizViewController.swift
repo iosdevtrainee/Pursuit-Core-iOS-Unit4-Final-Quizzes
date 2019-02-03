@@ -34,7 +34,7 @@ extension QuizViewController: UICollectionViewDelegate {
         cell.label.text = self.quiz.quizTitle
       })
     } else {
-      UIView.transition(with: cell, duration: 1.0, options: [.transitionFlipFromLeft], animations: {
+      UIView.transition(with: cell, duration: 1.0, options: [.transitionFlipFromRight], animations: {
         cell.label.text = fact
       })
     }

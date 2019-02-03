@@ -22,7 +22,9 @@ class CreateViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     setupNavBar()
-    view = createView
+    if sessionManager.isLoggedIn {
+        view = createView
+    }
   }
   
   private func setupNavBar() {
@@ -36,6 +38,23 @@ class CreateViewController: UIViewController {
   }
   
   @objc private func addQuiz(){
-//    guard let descriptionOne = quizView.
+    guard let quizTitle = createView.quizTextField.text,
+      let factOne = createView.firstDescriptionTextView.text,
+      let factTwo = createView.secondDescriptionTextView.text,
+      !quizTitle.isEmpty && !factTwo.isEmpty && !factOne.isEmpty else {
+        showAlert(title: "Invalid Input", message: "No field should be left blank.", actionMsg: "Cancel")
+        return
+    }
+    
+    let date = Date()
+    let id = UUID()
+    let quiz = Quiz(quizTitle: quizTitle, id:id, creationDate: date, facts: [factOne,factTwo])
+    do {
+      try quizManager.saveQuiz(quiz: quiz)
+    } catch {
+      showAlert(title: "Save Error", message: error.localizedDescription, actionMsg: "Cancel")
+    }
+    showAlert(title: "Success", message:"Quiz saved successfully." , actionMsg: "Done")
   }
+  
 }

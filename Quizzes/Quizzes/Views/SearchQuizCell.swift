@@ -13,11 +13,11 @@ class SearchQuizCell: UICollectionViewCell {
     let label = UILabel()
     return label
   }()
+  public var quiz: QuizProtocol!
   
   public lazy var quizButton: UIButton = {
     let button = UIButton()
     button.setImage(UIImage(named: "add-icon"), for: .normal)
-//    button.backgroundColor = .black
     return button
   }()
   
@@ -30,7 +30,7 @@ class SearchQuizCell: UICollectionViewCell {
   }
   
   override func layoutSubviews() {
-    self.backgroundColor = .red
+    self.backgroundColor = .white
     setupAddButton()
     setupQuizLabel()
   }
@@ -53,9 +53,11 @@ class SearchQuizCell: UICollectionViewCell {
     label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
   }
   
-  public func configureCell(quiz:QuizProtocol,imageName:String){
+  public func configureCell(quiz:QuizProtocol,imageName:String, selector:Selector, sender:Any?){
     label.text = quiz.quizTitle
+    self.quiz = quiz
     quizButton.setImage(UIImage(named: imageName), for: .normal)
+    quizButton.addTarget(sender, action: selector, for: .touchUpInside)
   }
   
 }

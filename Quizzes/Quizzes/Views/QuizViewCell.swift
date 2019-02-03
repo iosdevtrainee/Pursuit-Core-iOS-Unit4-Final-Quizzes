@@ -16,7 +16,6 @@ class QuizViewCell: UICollectionViewCell {
   
   public lazy var addQuizButton: UIButton = {
     let button = UIButton()
-    //    button.backgroundColor = .black
     return button
   }()
   
@@ -29,7 +28,7 @@ class QuizViewCell: UICollectionViewCell {
   }
   
   override func layoutSubviews() {
-    self.backgroundColor = .red
+    self.backgroundColor = .white
     setupAddButton()
     setupQuizLabel()
   }

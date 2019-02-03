@@ -37,7 +37,9 @@ class CreateView: UIView {
   override func layoutSubviews() {
     super.layoutSubviews()
     setupView()
-    backgroundColor = .green
+    backgroundColor = .white
+    layer.borderColor = UIColor.blue.cgColor
+    layer.borderWidth = 2
   }
   
   private func setupView(){

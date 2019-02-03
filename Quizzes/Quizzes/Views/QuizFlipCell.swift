@@ -11,6 +11,8 @@ import UIKit
 class QuizFlipCell: UICollectionViewCell {
   public lazy var label: UILabel = {
     let label = UILabel()
+    label.numberOfLines = 5
+    label
     return label
   }()
   
@@ -30,7 +32,7 @@ class QuizFlipCell: UICollectionViewCell {
   private func setupQuizLabel(){
     addSubview(label)
     label.translatesAutoresizingMaskIntoConstraints = false
-    label.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.1).isActive = true
+    label.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.5).isActive = true
     label.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.95).isActive = true
     label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
     label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
