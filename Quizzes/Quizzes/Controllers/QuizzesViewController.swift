@@ -41,9 +41,9 @@ class QuizzesViewController: UIViewController {
   }
   
   private func setupUI(){
-    if quizzes.count == 0 {
+    if quizzes.count == 0 && sessionManager.isLoggedIn {
       let blankView = BlankView()
-      blankView.textView.text = "Please add quizzes"
+      blankView.textView.text = "Login and add quizzes"
       view = blankView
     } else {
       view = quizView

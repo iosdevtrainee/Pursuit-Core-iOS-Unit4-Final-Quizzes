@@ -24,6 +24,8 @@ class CreateViewController: UIViewController {
     setupNavBar()
     if sessionManager.isLoggedIn {
         view = createView
+    } else {
+      showAlert(title: "Unable to access this page", message: "Please Login", actionMsg:"Cancel")
     }
   }
   
